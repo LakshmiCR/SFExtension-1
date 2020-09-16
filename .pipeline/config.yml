@@ -28,12 +28,12 @@ stages:
       - 1300
   productionDeployment: 
     cfTargets: 
-      - 
-        apiEndpoint: "https://api.cf.eu10.hana.ondemand.com"
-        appName: cloud-sf-extension-cap-sample
-        credentialsId: globalfarozan
-        org: SA0176014160_AutomationSubAccountDomain
+      - org: SA0176014160_AutomationSubAccountDomain
         space: Dev
+        appName: cloud-sf-extension-cap-sample
+        apiEndpoint: "https://api.cf.eu10.hana.ondemand.com"       
+        credentialsId: globalfarozan
+       
   s4SdkQualityChecks: 
     jacocoExcludes: 
       - "**/gen/**"
