@@ -1,20 +1,36 @@
-general: 
+#Project Setup
+general:
+  unsafeMode: false
   automaticVersioning: true
   collectTelemetryData: false
-  extensionRepository: "https://github.com/SAP/cloud-s4-sdk-pipeline.git"
-  productiveBranch: master
-  projectName: cloud-cap-s4ems-bp
-  unsafeMode: false
-stages: 
-  lint: 
-    ui5BestPractices: 
-      failThreshold: 
-        error: 100
-        info: 1000
-        warning: 500
-  npmAudit: 
-    auditedAdvisories: 
-      - 550
+  projectName: 'cloud-cap-s4ems-bp'
+  extensionRepository: 'https://github.com/SAP/cloud-s4-sdk-pipeline.git'
+  productiveBranch: 'master'
+ 
+steps:
+  artifactSetVersion:
+    commitVersion: false
+    timestampTemplate: '%Y%m%d%H%M%S'
+  executeNpm:
+    dockerImage: 'ppiper/node-browsers:v2'
+  cloudFoundryDeploy:
+    dockerImage: 'ppiper/cf-cli'
+    mtaDeployParameters: '-f --version-rule ALL'
+  sapNexusStage:
+    stagingProfile: 'integration'
+    repositoryFormat: 'npm'
+  sapNexusUploadArtifacts:
+    packaging: 'mtar'
+    buildDescriptorFile: 'mta.yaml'
+    uploadFile: 'BusinessPartnerValidation_1.0.0.mtar'
+    artifactType: 'mta'
+  mtaBuild:
+    mtaBuildTool: "cloudMbt"
+stages:
+  npmAudit:
+    auditedAdvisories:
+    # high
+      - 550  
       - 593
       - 1184
       - 755
@@ -23,8 +39,17 @@ stages:
       - 1316
       - 1324
       - 1325
+    # moderate
       - 535
       - 1300
+ 
+  lint:
+    ui5BestPractices:
+      failThreshold:
+        error: 100
+        warning: 500
+        info: 1000
+
   productionDeployment: 
     cfTargets: 
       - org: SA0176014160_AutomationSubAccountDomain
@@ -32,27 +57,3 @@ stages:
         appName: cloud-sf-extension-cap-sample
         apiEndpoint: "https://api.cf.eu10.hana.ondemand.com"       
         credentialsId: globalfarozan
-       
-  s4SdkQualityChecks: 
-    jacocoExcludes: 
-      - "**/gen/**"
-      - "**/Application.class"
-steps: 
-  artifactSetVersion: 
-    commitVersion: false
-    timestampTemplate: "%Y%m%d%H%M%S"
-  cloudFoundryDeploy: 
-    dockerImage: ppiper/cf-cli
-    mtaDeployParameters: "-f --version-rule ALL"
-  executeNpm: 
-    dockerImage: "ppiper/node-browsers:v2"
-  mtaBuild: 
-    mtaBuildTool: cloudMbt
-  sapNexusStage: 
-    repositoryFormat: npm
-    stagingProfile: integration
-  sapNexusUploadArtifacts: 
-    artifactType: mta
-    buildDescriptorFile: mta.yaml
-    packaging: mtar
-    uploadFile: cloud-sf-extension-cap-sample_1.0.0.mtar
