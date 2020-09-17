@@ -1,4 +1,3 @@
---- 
 general: 
   automaticVersioning: true
   collectTelemetryData: false
